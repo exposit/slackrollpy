@@ -1,7 +1,9 @@
 #!/usr/bin/python
-# 
+#
 # dice roller for slack
 # supports basic die rolling and new World of Darkness dice rolling
+# MIT licensed as appropriate
+# for latest version go to github.com/exposit/slackrollpy/
 #
 from random import randint
 from random import seed
