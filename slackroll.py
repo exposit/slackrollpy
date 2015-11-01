@@ -10,6 +10,7 @@ from random import seed
 import time
 import re
 from slackclient import SlackClient
+import slacktoken
 
 # set this to false to go live and send messaging to slack
 debug = True
@@ -17,18 +18,8 @@ debug = True
 # set this to true to output a LOT more messaging to the terminal
 verbose = False
 
-# create a bot integration and follow the instructions on the slack website
-# to post as bot, use bot's auth token; to post as a user, use a user auth token
-token = ""
-
-# set default channel id for the bot to post in, by name or id
-channel = "roleplaying"
-
 # if true, only the specified channel will be used; otherwise bot will respond on the channel the request originated on if it belongs
 static_channel = False
-
-# set the gamebot's id so it can respond properly
-botid = ""
 
 # messaging
 ready_pre_msg = "_is ready to roll._"
@@ -40,6 +31,8 @@ seed()
 
 # for logging purposes
 userid = ""
+token = slacktoken.token
+channel = slacktoken.channel
 
 # add up number of successes
 def total_successes(results, target):
@@ -134,9 +127,10 @@ def roll_controller(count, sides, target=-1, explode=-1, rote=-1, chance=-1):
             else:
                 format_list.append("ef")
                 
-    # redirect this to a text log            
-    print(results_list)
-    print(format_list)
+    # redirect this to a text log eventually; for now, rely on slack's search
+    if verbose:
+        print(results_list)
+        print(format_list)
     
     message = format_results(results_list, format_list)
     if target != -1:
@@ -279,9 +273,9 @@ def command_received(command):
     return message, successes
 
 if debug:
-    # msg, error = command_received("roll 3d10 explode 10 target 8 rote")
-    msg, error = command_received("chance")
-    print(msg, error)
+    # msg, rc = command_received("roll 3d10 explode 10 target 8 rote")
+    msg, rc = command_received("chance")
+    print(msg, rc)
 
     quit()
 
@@ -308,6 +302,7 @@ def holding_loop():
             print("[Code -7] Help request issued.")
         elif rc == -9:
             print("[Code -9] No target set so no successes reported.")
+            user = "<@" + userid + "> rolled: "
         else:
             tail = " (" + str(rc) + " Successes"
             user = "<@" + userid + "> rolled: "
