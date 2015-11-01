@@ -304,7 +304,10 @@ def holding_loop():
             print("[Code -9] No target set so no successes reported.")
             user = "<@" + userid + "> rolled: "
         else:
-            tail = " (" + str(rc) + " Successes"
+            if rc == 1:
+                tail = "  (" + str(rc) + " Success"
+            else:
+                tail = "  (" + str(rc) + " Successes"
             user = "<@" + userid + "> rolled: "
             tag = ")"
             if rc >= 5:
@@ -317,9 +320,7 @@ def holding_loop():
             sc.rtm_send_message(channel, msg)
         print(msg)
                 
-    time.sleep(2)
-    holding_loop()
-    
+    time.sleep(1)
 
 # this is the core routine
 sc = SlackClient(token)
@@ -333,7 +334,9 @@ if sc.rtm_connect():
         sc.rtm_send_message(channel, ready_pre_msg)
         time.sleep(1)
     
-    holding_loop()
+    while True:
+        holding_loop()
+        time.sleep(1)
     
     if not debug:
         sc.rtm_send_message(channel, shutting_down_main_msg)
