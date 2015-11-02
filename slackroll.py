@@ -15,8 +15,9 @@ import slacktoken
 # set this to false to go live and send messaging to slack
 debug = True
 
-# set this to true to output more messaging to the terminal; set to 1 to output LOTS more messaging  
+# set this to true to output more messaging to the terminal; verbose is general messaging, verbose_raw includes raw messaging
 verbose = True
+verbose_raw = False
 
 # if true, only the specified channel will be used; otherwise bot will respond on the channel the request originated on if it belongs
 static_channel = False
@@ -150,7 +151,7 @@ def check_for_input():
     
     if len(test) > 0:
         elem = test[0]
-        if verbose == 1:
+        if verbose_raw:
             print('RAW Message:\n%s' % test)
         if "type" in elem.keys() and "channel" in elem.keys():
             if not static_channel:
