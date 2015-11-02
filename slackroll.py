@@ -15,8 +15,8 @@ import slacktoken
 # set this to false to go live and send messaging to slack
 debug = True
 
-# set this to true to output a LOT more messaging to the terminal
-verbose = False
+# set this to true to output more messaging to the terminal; set to 1 to output LOTS more messaging  
+verbose = True
 
 # if true, only the specified channel will be used; otherwise bot will respond on the channel the request originated on if it belongs
 static_channel = False
@@ -150,7 +150,7 @@ def check_for_input():
     
     if len(test) > 0:
         elem = test[0]
-        if verbose:
+        if verbose == 1:
             print('RAW Message:\n%s' % test)
         if "type" in elem.keys() and "channel" in elem.keys():
             if not static_channel:
@@ -185,6 +185,9 @@ def command_received(command):
         chance = 1
     else:
         chance = -1
+    if verbose:
+        print("[Regex] Chance is: ")
+        print(chance)
     
     # handle using nwod defaults if choices not specified
     if "nwod" in command or "chance" in command:
@@ -192,6 +195,9 @@ def command_received(command):
         command = command.replace("nwod"," ")
     else:
         nwod = -1
+    if verbose:
+        print("[Regex] NWOD mode is: ")
+        print(nwod)
     
     # is rote present? this only works later if a target is also set
     if "rote" in command:
@@ -199,6 +205,9 @@ def command_received(command):
         command = command.replace("rote", "")
     else:
         rote = -1
+    if verbose:
+        print("[Regex] Rote is: ")
+        print(rote)
     
     # is there a valid count?
     if chance != -1:
@@ -219,6 +228,10 @@ def command_received(command):
     
     if count == 0:
         count = 1
+        
+    if verbose:
+        print("[Regex] Count is: ")
+        print(count)
     
     # are sides specified properly?
     regex = re.compile('[0-9]d([0-9]*)')
@@ -238,6 +251,9 @@ def command_received(command):
         error = -2
         err_msg = "No number of sides found, need help? Use *roll help* or try *roll 3d10*."
         return err_msg, error
+    if verbose:
+        print("[Regex] Sides are: ")
+        print(sides)
     
     # should we explode dice?
     regex = re.compile('[0-9]e(xplode)?([0-9]*)')
@@ -251,7 +267,12 @@ def command_received(command):
             explode = 10
         else:
             explode = -1
-    
+    if explode == 1:
+        explode == -1
+    if verbose:
+        print("[Regex] Explode is: ")
+        print(explode)
+        
     # is there a target for success set?
     regex = re.compile('[0-9]t(arget)?([0-9]*)')
     target = regex.findall(command)
@@ -267,6 +288,9 @@ def command_received(command):
                 target = 8
         else:
             target = -1
+    if verbose:
+        print("[Regex] Target is: ")
+        print(target)
         
     # and pass them to our dice rolling function
     message, successes = roll_controller(count, sides, target, explode, rote, chance)
@@ -348,3 +372,4 @@ if sc.rtm_connect():
 else:
 
     print('\n[Status] Connection Failed, invalid token?')
+
